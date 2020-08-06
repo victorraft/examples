@@ -111,7 +111,7 @@ public class MainActivity extends Activity implements OnClickListener {
             cameraView.stopPreview();
         }
 
-        if(cameraDevice != null) {
+        if (cameraDevice != null) {
             cameraDevice.stopPreview();
             cameraDevice.release();
             cameraDevice = null;
@@ -166,7 +166,7 @@ public class MainActivity extends Activity implements OnClickListener {
     //---------------------------------------
     private void initRecorder() {
 
-        Log.w(LOG_TAG,"init recorder");
+        Log.w(LOG_TAG, "init recorder");
 
         if (RECORD_LENGTH > 0) {
             imagesIndex = 0;
@@ -213,7 +213,7 @@ public class MainActivity extends Activity implements OnClickListener {
             recording = true;
             audioThread.start();
 
-            if(addFilter) {
+            if (addFilter) {
                 filter.start();
             }
 
@@ -237,7 +237,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         if (recorder != null && recording) {
             if (RECORD_LENGTH > 0) {
-                Log.v(LOG_TAG,"Writing frames");
+                Log.v(LOG_TAG, "Writing frames");
                 try {
                     int firstIndex = imagesIndex % samples.length;
                     int lastIndex = (imagesIndex - 1) % images.length;
@@ -274,13 +274,13 @@ public class MainActivity extends Activity implements OnClickListener {
                         recorder.recordSamples(samples[i % samples.length]);
                     }
                 } catch (FFmpegFrameRecorder.Exception e) {
-                    Log.v(LOG_TAG,e.getMessage());
+                    Log.v(LOG_TAG, e.getMessage());
                     e.printStackTrace();
                 }
             }
 
             recording = false;
-            Log.v(LOG_TAG,"Finishing recording, calling stop and release on recorder");
+            Log.v(LOG_TAG, "Finishing recording, calling stop and release on recorder");
             try {
                 recorder.stop();
                 recorder.release();
@@ -353,7 +353,7 @@ public class MainActivity extends Activity implements OnClickListener {
                 bufferReadResult = audioRecord.read(audioData.array(), 0, audioData.capacity());
                 audioData.limit(bufferReadResult);
                 if (bufferReadResult > 0) {
-                    Log.v(LOG_TAG,"bufferReadResult: " + bufferReadResult);
+                    Log.v(LOG_TAG, "bufferReadResult: " + bufferReadResult);
                     // If "recording" isn't true when start this thread, it never get's set according to this if statement...!!!
                     // Why?  Good question...
                     if (recording) {
@@ -361,20 +361,20 @@ public class MainActivity extends Activity implements OnClickListener {
                             recorder.recordSamples(audioData);
                             //Log.v(LOG_TAG,"recording " + 1024*i + " to " + 1024*i+1024);
                         } catch (FFmpegFrameRecorder.Exception e) {
-                            Log.v(LOG_TAG,e.getMessage());
+                            Log.v(LOG_TAG, e.getMessage());
                             e.printStackTrace();
                         }
                     }
                 }
             }
-            Log.v(LOG_TAG,"AudioThread Finished, release audioRecord");
+            Log.v(LOG_TAG, "AudioThread Finished, release audioRecord");
 
             /* encoding finish, release recorder */
             if (audioRecord != null) {
                 audioRecord.stop();
                 audioRecord.release();
                 audioRecord = null;
-                Log.v(LOG_TAG,"audioRecord released");
+                Log.v(LOG_TAG, "audioRecord released");
             }
         }
     }
@@ -389,7 +389,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         public CameraView(Context context, Camera camera) {
             super(context);
-            Log.w("camera","camera view");
+            Log.w("camera", "camera view");
             mCamera = camera;
             mHolder = getHolder();
             mHolder.addCallback(CameraView.this);
@@ -433,10 +433,10 @@ public class MainActivity extends Activity implements OnClickListener {
             }
             camParams.setPreviewSize(imageWidth, imageHeight);
 
-            Log.v(LOG_TAG,"Setting imageWidth: " + imageWidth + " imageHeight: " + imageHeight + " frameRate: " + frameRate);
+            Log.v(LOG_TAG, "Setting imageWidth: " + imageWidth + " imageHeight: " + imageHeight + " frameRate: " + frameRate);
 
             camParams.setPreviewFrameRate(frameRate);
-            Log.v(LOG_TAG,"Preview Framerate: " + camParams.getPreviewFrameRate());
+            Log.v(LOG_TAG, "Preview Framerate: " + camParams.getPreviewFrameRate());
 
             mCamera.setParameters(camParams);
 
@@ -489,16 +489,16 @@ public class MainActivity extends Activity implements OnClickListener {
 
             /* get video data */
             if (yuvImage != null && recording) {
-                ((ByteBuffer)yuvImage.image[0].position(0)).put(data);
+                ((ByteBuffer) yuvImage.image[0].position(0)).put(data);
 
                 if (RECORD_LENGTH <= 0) try {
-                    Log.v(LOG_TAG,"Writing Frame");
+                    Log.v(LOG_TAG, "Writing Frame");
                     long t = 1000 * (System.currentTimeMillis() - startTime);
                     if (t > recorder.getTimestamp()) {
                         recorder.setTimestamp(t);
                     }
 
-                    if(addFilter) {
+                    if (addFilter) {
                         filter.push(yuvImage);
                         Frame frame2;
                         while ((frame2 = filter.pull()) != null) {
@@ -508,7 +508,7 @@ public class MainActivity extends Activity implements OnClickListener {
                         recorder.record(yuvImage);
                     }
                 } catch (FFmpegFrameRecorder.Exception | FrameFilter.Exception e) {
-                    Log.v(LOG_TAG,e.getMessage());
+                    Log.v(LOG_TAG, e.getMessage());
                     e.printStackTrace();
                 }
             }
